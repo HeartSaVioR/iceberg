@@ -23,4 +23,14 @@ import java.io.OutputStream;
 
 public interface DelegatingOutputStream {
   OutputStream getDelegate();
+
+  /**
+   * Revoke delegation and retrieve the output stream this instance delegated.
+   * The instance should not be used after calling this method - continue to use this instance
+   * doesn't guarantee any correct behavior.
+   *
+   * @return the output stream this instance delegated. Expected to return the identical
+   *         instance as getDelegate() returns.
+   */
+  OutputStream revoke();
 }

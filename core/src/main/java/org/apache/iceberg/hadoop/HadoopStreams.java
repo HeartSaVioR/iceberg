@@ -87,6 +87,12 @@ class HadoopStreams {
     }
 
     @Override
+    public InputStream revoke() {
+      this.closed = true;
+      return stream;
+    }
+
+    @Override
     public void close() throws IOException {
       stream.close();
       this.closed = true;
@@ -145,6 +151,12 @@ class HadoopStreams {
 
     @Override
     public OutputStream getDelegate() {
+      return stream;
+    }
+
+    @Override
+    public OutputStream revoke() {
+      this.closed = true;
       return stream;
     }
 

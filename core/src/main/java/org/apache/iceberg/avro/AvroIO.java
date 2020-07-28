@@ -62,9 +62,11 @@ class AvroIO {
 
   static SeekableInput stream(SeekableInputStream stream, long length) {
     if (stream instanceof DelegatingInputStream) {
-      InputStream wrapped = ((DelegatingInputStream) stream).getDelegate();
+      DelegatingInputStream wrapper = (DelegatingInputStream) stream;
+      InputStream wrapped = wrapper.getDelegate();
       if (avroFsInputCtor != null && fsDataInputStreamClass != null &&
           fsDataInputStreamClass.isInstance(wrapped)) {
+        wrapper.revoke();
         return avroFsInputCtor.newInstance(wrapped, length);
       }
     }
