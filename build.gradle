@@ -58,6 +58,7 @@ allprojects {
   repositories {
     maven { url  "http://palantir.bintray.com/releases" }
     mavenCentral()
+    maven { url "https://nexus-private.hortonworks.com/nexus/content/groups/public" }
     mavenLocal()
   }
 }
@@ -496,6 +497,7 @@ project(':iceberg-spark') {
     compileOnly "org.apache.avro:avro"
     compileOnly("org.apache.spark:spark-hive_2.11") {
       exclude group: 'org.apache.avro', module: 'avro'
+      exclude group: 'org.apache.orc', module: 'orc-core'
     }
 
     testCompile "org.apache.hadoop:hadoop-hdfs::tests"
@@ -549,6 +551,7 @@ if (jdkVersion == '8') {
       compileOnly "org.apache.avro:avro"
       compileOnly("org.apache.spark:spark-hive_2.11") {
         exclude group: 'org.apache.avro', module: 'avro'
+        exclude group: 'org.apache.orc', module: 'orc-core'
       }
 
       testCompile project(path: ':iceberg-spark', configuration: 'testArtifacts')
@@ -656,6 +659,7 @@ project(':iceberg-spark3') {
     compileOnly("org.apache.spark:spark-hive_2.12") {
       exclude group: 'org.apache.avro', module: 'avro'
       exclude group: 'org.apache.arrow'
+      exclude group: 'org.apache.orc', module: 'orc-core'
     }
 
     testCompile project(path: ':iceberg-spark', configuration: 'testArtifacts')

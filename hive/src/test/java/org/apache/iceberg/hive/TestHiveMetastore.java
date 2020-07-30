@@ -122,7 +122,7 @@ public class TestHiveMetastore {
     ScriptRunner scriptRunner = new ScriptRunner(connection, true, true);
 
     ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-    InputStream inputStream = classLoader.getResourceAsStream("hive-schema-3.1.0.derby.sql");
+    InputStream inputStream = classLoader.getResourceAsStream("hive-schema-3.1.3000.derby.sql");
     try (Reader reader = new InputStreamReader(inputStream)) {
       scriptRunner.runScript(reader);
     }
