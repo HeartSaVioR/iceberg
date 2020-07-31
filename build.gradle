@@ -364,6 +364,8 @@ project(':iceberg-hive') {
   }
 }
 
+// Exclude iceberg-mr as it is not compatible with Hive 3 as of now
+/*
 project(':iceberg-mr') {
   dependencies {
     compile project(':iceberg-api')
@@ -406,6 +408,7 @@ project(':iceberg-mr') {
     }
   }
 }
+*/
 
 project(':iceberg-orc') {
   dependencies {
