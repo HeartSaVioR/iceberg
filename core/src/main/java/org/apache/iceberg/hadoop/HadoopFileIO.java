@@ -28,8 +28,11 @@ import org.apache.iceberg.io.FileIO;
 import org.apache.iceberg.io.InputFile;
 import org.apache.iceberg.io.OutputFile;
 import org.apache.iceberg.util.SerializableSupplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HadoopFileIO implements FileIO {
+  private static final Logger LOG = LoggerFactory.getLogger(HadoopFileIO.class);
 
   private final SerializableSupplier<Configuration> hadoopConf;
 
@@ -47,11 +50,13 @@ public class HadoopFileIO implements FileIO {
 
   @Override
   public InputFile newInputFile(String path) {
+    LOG.info("InputFile open for reading: {}", path);
     return HadoopInputFile.fromLocation(path, hadoopConf.get());
   }
 
   @Override
   public OutputFile newOutputFile(String path) {
+    LOG.info("OutputFile open for writing: {}", path);
     return HadoopOutputFile.fromPath(new Path(path), hadoopConf.get());
   }
 
@@ -60,6 +65,7 @@ public class HadoopFileIO implements FileIO {
     Path toDelete = new Path(path);
     FileSystem fs = Util.getFs(toDelete, hadoopConf.get());
     try {
+      LOG.info("Deleting file: {}", path);
       fs.delete(toDelete, false /* not recursive */);
     } catch (IOException e) {
       throw new RuntimeIOException(e, "Failed to delete file: %s", path);

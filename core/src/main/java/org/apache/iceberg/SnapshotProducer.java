@@ -141,14 +141,23 @@ abstract class SnapshotProducer<ThisT> implements SnapshotUpdate<ThisT> {
 
   @Override
   public Snapshot apply() {
+    long startRefresh = System.currentTimeMillis();
     this.base = refresh();
+    long durationRefresh = System.currentTimeMillis() - startRefresh;
+    LOG.info("Refreshing table takes {} ms", durationRefresh);
+
     Long parentSnapshotId = base.currentSnapshot() != null ?
         base.currentSnapshot().snapshotId() : null;
     long sequenceNumber = base.nextSequenceNumber();
 
+    long startApply = System.currentTimeMillis();
     List<ManifestFile> manifests = apply(base);
+    long durationApply = System.currentTimeMillis() - startApply;
+    LOG.info("Apply(base) within apply() takes {} ms", durationApply);
 
     if (base.formatVersion() > 1 || base.propertyAsBoolean(MANIFEST_LISTS_ENABLED, MANIFEST_LISTS_ENABLED_DEFAULT)) {
+      long startManifestList = System.currentTimeMillis();
+
       OutputFile manifestList = manifestListPath();
 
       try (ManifestListWriter writer = ManifestLists.write(
@@ -167,6 +176,8 @@ abstract class SnapshotProducer<ThisT> implements SnapshotUpdate<ThisT> {
 
         writer.addAll(Arrays.asList(manifestFiles));
 
+        long durationManifestList = System.currentTimeMillis() - startManifestList;
+        LOG.info("Writing manifest list takes {} ms", durationManifestList);
       } catch (IOException e) {
         throw new RuntimeIOException(e, "Failed to write manifest list file");
       }
@@ -259,7 +270,11 @@ abstract class SnapshotProducer<ThisT> implements SnapshotUpdate<ThisT> {
               2.0 /* exponential */)
           .onlyRetryOn(CommitFailedException.class)
           .run(taskOps -> {
+            long startApply = System.currentTimeMillis();
             Snapshot newSnapshot = apply();
+            long durationApply = System.currentTimeMillis() - startApply;
+            LOG.info("Crafting a new snapshot takes {} ms", durationApply);
+
             newSnapshotId.set(newSnapshot.snapshotId());
             TableMetadata updated;
             if (stageOnly) {
@@ -276,7 +291,11 @@ abstract class SnapshotProducer<ThisT> implements SnapshotUpdate<ThisT> {
 
             // if the table UUID is missing, add it here. the UUID will be re-created each time this operation retries
             // to ensure that if a concurrent operation assigns the UUID, this operation will not fail.
+
+            long startCommit = System.currentTimeMillis();
             taskOps.commit(base, updated.withUUID());
+            long durationCommit = System.currentTimeMillis() - startCommit;
+            LOG.info("Committing new metadata takes {} ms", durationCommit);
           });
 
     } catch (RuntimeException e) {
