@@ -779,7 +779,7 @@ The following sections describe the feasibility on read/write for Iceberg type f
 | fixed                      | binary                  |       |
 | binary                     | binary                  |       |
 | decimal                    | decimal                 |       |
-| struct                     | struct                  | <WIP> |
+| struct                     | struct                  |       |
 | list                       | array                   |       |
 | map                        | map                     |       |
 
@@ -800,7 +800,7 @@ Note that the type conversion is a bit different from the one for creating table
 | binary                  | fixed                   | assertion on the length will be performed |
 | binary                  | binary                  |                                           |
 | decimal                 | decimal                 | numeric*                                  |
-| struct                  | struct                  | <WIP>                                     |
+| struct                  | struct                  |                                           |
 | array                   | list                    |                                           |
 | map                     | map                     |                                           |
 
